@@ -6,5 +6,5 @@
 # Route any /tcg/* request to the function (no CORS in browser)
 [[redirects]]
   from = "/tcg/*"
-  to   = "/.netlify/functions/tcg-proxy"
+  to   = "/.netlify/functions/tcg-proxy/:splat"
   status = 200
