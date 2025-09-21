@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gradient-to-br from-sky-50 to-indigo-100 text-gray-900;
+}
+
+.pokemon-text {
+  color: #ffe34f;
+  text-shadow:
+    2px 2px 0 #1e3a8a,
+    -2px 2px 0 #1e3a8a,
+    2px -2px 0 #1e3a8a,
+    -2px -2px 0 #1e3a8a,
+    0 2px 0 #1e3a8a,
+    2px 0 0 #1e3a8a,
+    0 -2px 0 #1e3a8a,
+    -2px 0 0 #1e3a8a;
+}
+
+@keyframes shake {
+  0%   { transform: translate(0, 0) rotate(0); }
+  20%  { transform: translate(-3px, 2px) rotate(-0.5deg); }
+  40%  { transform: translate(3px, -2px) rotate(0.6deg); }
+  60%  { transform: translate(-2px, 1px) rotate(-0.4deg); }
+  80%  { transform: translate(2px, 0px) rotate(0.4deg); }
+  100% { transform: translate(0, 0) rotate(0); }
+}
+.shake { animation: shake 300ms ease-in-out 0s 2; }
+
+/* Pokémon card frame look */
+.card-frame {
+  background: #1e3a8a;
+  border: 6px solid #facc15;
+  border-radius: 18px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  padding: 14px;
+}
+.card-inner {
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95));
+  border-radius: 12px;
+  padding: 14px;
+}
+
+#searchBtnLeft {
+  background-color: #2563eb !important; /* blue */
+  color: #fde047 !important;            /* yellow */
+  border-color: #2563eb !important;
+}
+#searchBtnLeft:hover {
+  background-color: #1d4ed8 !important;
+  color: #facc15 !important;
+}
