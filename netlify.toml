@@ -1,9 +1,16 @@
 [build]
   command   = "npm run build"
   publish   = "dist"
-  functions = "netlify/functions"
+  functions = "netlify/functions" # keep if you still have normal functions
 
-[[redirects]]
-  from = "/tcg/*"
-  to   = "/.netlify/functions/tcg-proxy/:splat"
-  status = 200
+# (Optional) you can keep the redirect as a fallback,
+# but Edge Functions will win for /tcg/* paths.
+# [[redirects]]
+#   from = "/tcg/*"
+#   to   = "/.netlify/functions/tcg-proxy/:splat"
+#   status = 200
+
+# Use the Edge Function for any /tcg/* request
+[[edge_functions]]
+  path = "/tcg/*"
+  function = "tcg-proxy"
