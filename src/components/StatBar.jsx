@@ -1,6 +1,5 @@
 import React from "react";
-
-export default function StatBar({ label, value, fillColor = "#9CA3AF", maxStat = 360 }) {
+export default function StatBar({ label, value, fillColor = "#9CA3AF", maxStat = 160 }) {
   const n = Number(value);
   const safe = Number.isFinite(n) ? Math.max(0, Math.min(n, maxStat)) : 0;
   let pct = Math.round((safe / maxStat) * 100);

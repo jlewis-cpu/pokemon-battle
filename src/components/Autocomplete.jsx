@@ -1,8 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { getCachedNames } from "../cache";
-import { getCollectionNames } from "../collection";
 
-export default function Autocomplete({ value, onChange, onSelect, placeholder = "Type full card name…" }) {
+const LS_LIST = 'poke_names_v1';
+
+async function fetchSpeciesList() {
+  const url = 'https://pokeapi.co/api/v2/pokemon?limit=20000&offset=0';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('list not ok');
+  const data = await res.json();
+  return data.results.map(r => r.name);
+}
+
+export default function Autocomplete({ value, onChange, onSelect, placeholder="Start typing a Pokémon…" }){
   const [q, setQ] = useState(value || "");
   const [items, setItems] = useState([]);
   const [open, setOpen] = useState(false);
@@ -11,18 +19,33 @@ export default function Autocomplete({ value, onChange, onSelect, placeholder = 
 
   useEffect(() => setQ(value || ""), [value]);
 
+  // Load list once
   useEffect(() => {
-    if (!q || q.trim().length < 1) {
-      const fromCollection = getCollectionNames('');
-      const local = getCachedNames('');
-      const merged = Array.from(new Set([...fromCollection, ...local])).slice(0, 20);
-      setItems(merged); setOpen(merged.length > 0); return;
+    let mounted = true;
+    const cached = JSON.parse(localStorage.getItem(LS_LIST) || "[]");
+    if (cached.length) setItems(cached.slice(0, 20));
+    (async () => {
+      try {
+        const names = await fetchSpeciesList();
+        if (!mounted) return;
+        localStorage.setItem(LS_LIST, JSON.stringify(names));
+        updateList(q, names);
+      } catch {}
+    })();
+    return () => { mounted = false; }
+  }, []);
+
+  function updateList(query, baseList=null){
+    const names = baseList || JSON.parse(localStorage.getItem(LS_LIST) || "[]");
+    if (!query || !query.trim()) {
+      setItems(names.slice(0, 20)); setOpen(names.length>0); return;
     }
-    const fromCollection = getCollectionNames(q.trim());
-    const local = getCachedNames(q.trim());
-    const merged = Array.from(new Set([...fromCollection, ...local])).slice(0, 20);
-    setItems(merged); setOpen(merged.length > 0);
-  }, [q]);
+    const p = query.toLowerCase();
+    const filtered = names.filter(n => n.includes(p)).slice(0, 20);
+    setItems(filtered); setOpen(filtered.length>0);
+  }
+
+  useEffect(() => { updateList(q); }, [q]);
 
   useEffect(() => {
     function onDocClick(e){ if (!ref.current) return; if (!ref.current.contains(e.target)) setOpen(false); }
@@ -48,7 +71,7 @@ export default function Autocomplete({ value, onChange, onSelect, placeholder = 
       {open && items.length > 0 && (
         <ul className="absolute z-40 mt-1 w-full max-h-56 overflow-auto bg-white border rounded-lg shadow">
           {items.map((name, i) => (
-            <li key={name + i} className={"px-3 py-2 text-sm cursor-pointer " + (i === highlight ? "bg-indigo-50" : "")}
+            <li key={name + i} className={"px-3 py-2 text-sm cursor-pointer capitalize " + (i === highlight ? "bg-indigo-50" : "")}
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => choose(name)} onMouseEnter={() => setHighlight(i)}>{name}</li>
           ))}
